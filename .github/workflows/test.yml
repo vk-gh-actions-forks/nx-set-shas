@@ -21,29 +21,29 @@ jobs:
       fail-fast: false
     runs-on: ${{ matrix.runs-on }}
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Checkout [Pull Request]
         if: ${{ github.event_name == 'pull_request' }}
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Checkout [Push]
         if: ${{ github.event_name != 'pull_request' }}
         with:
           fetch-depth: 0
 
-      - name: Set Node.js 16.x
+      - name: Set Node.js 18.x
         uses: actions/setup-node@v3
         with:
-          node-version: 16
+          node-version: 18
 
       - name: Install
-        run: npm ci
+        run: yarn --frozen-lockfile
 
       - name: Compile
-        run: npm run build
+        run: yarn build
 
       - name: Test default PR Workflow
         if: github.event_name == 'pull_request'
@@ -68,7 +68,11 @@ jobs:
         if: github.event_name != 'pull_request'
         shell: bash
         run: |
-          BASE_SHA=$(echo $(git rev-parse HEAD~1))
+          if git merge-base --is-ancestor $NX_BASE HEAD; then
+            BASE_SHA=$NX_BASE;
+          else
+            BASE_SHA="";
+          fi
           HEAD_SHA=$(echo $(git rev-parse HEAD))
           node -e "if(process.env.NX_BASE == '${BASE_SHA}') console.log('Base set correctly'); else { throw new Error('Base not set correctly!');}"
           node -e "if(process.env.NX_HEAD == '${HEAD_SHA}') console.log('Head set correctly'); else { throw new Error('Head not set correctly!');}"

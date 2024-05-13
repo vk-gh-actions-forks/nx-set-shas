@@ -12,7 +12,7 @@ inputs:
     description: "By default, if no successful workflow is found on the main branch to determine the SHA, we will log a warning and use HEAD~1. Enable this option to error and exit instead."
     default: "false"
   last-successful-event:
-    description: "The type of event to check for the last successful commit corresponding to that workflow-id, e.g. push, pull-request, release etc"
+    description: "The type of event to check for the last successful commit corresponding to that workflow-id, e.g. push, pull_request, release etc"
     default: "push"
   working-directory:
     description: "The directory where your repository is located"
@@ -37,7 +37,14 @@ runs:
     - name: Set base and head SHAs used for nx affected
       id: setSHAs
       shell: bash
-      run: node $GITHUB_ACTION_PATH/dist/index.js ${{ github.token }} ${{ inputs.main-branch-name }} ${{ inputs.error-on-no-successful-workflow }} ${{ inputs.last-successful-event }} ${{ inputs.working-directory }} ${{ inputs.workflow-id }}
+      env:
+        gh_token: ${{ github.token }}
+        main_branch_name: ${{ inputs.main-branch-name }}
+        error_on_no_successful_workflow: ${{ inputs.error-on-no-successful-workflow }}
+        last_successful_event: ${{ inputs.last-successful-event }}
+        working_directory: ${{ inputs.working-directory }}
+        working_id: ${{ inputs.workflow-id }}
+      run: node "$GITHUB_ACTION_PATH/dist/index.js" "$gh_token" "$main_branch_name" "$error_on_no_successful_workflow" "$last_successful_event" "$working_directory" "$working_id"
 
     - name: Log base and head SHAs used for nx affected
       shell: bash

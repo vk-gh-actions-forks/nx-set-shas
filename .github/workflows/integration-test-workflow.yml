@@ -23,7 +23,7 @@ jobs:
       run:
         shell: bash
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Checkout [Pull Request]
         if: ${{ github.event_name == 'pull_request' }}
         with:
@@ -32,7 +32,7 @@ jobs:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
 
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
         name: Checkout [Default Branch]
         if: ${{ github.event_name != 'pull_request' }}
         with:
@@ -55,7 +55,11 @@ jobs:
       - name: Verify default Push Workflow
         if: ${{ github.event_name != 'pull_request' }}
         run: |
-          BASE_SHA=$(echo $(git rev-parse HEAD~1))
+          if git merge-base --is-ancestor $NX_BASE HEAD; then
+            BASE_SHA=$NX_BASE;
+          else
+            BASE_SHA="";
+          fi
           HEAD_SHA=$(echo $(git rev-parse HEAD))
           node -e "if(process.env.NX_BASE == '${BASE_SHA}') console.log('Base set correctly'); else { throw new Error('Base not set correctly!');}"
           node -e "if(process.env.NX_HEAD == '${HEAD_SHA}') console.log('Head set correctly'); else { throw new Error('Head not set correctly!');}"

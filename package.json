@@ -1,28 +1,44 @@
 {
   "private": true,
-  "version": "3.0.2",
+  "version": "4.0.4",
   "license": "MIT",
   "description": "This package.json is here purely to control the version of the Action, in combination with https://github.com/JamesHenry/publish-shell-action",
   "scripts": {
-    "build": "ncc build find-successful-workflow.js --license licenses.txt",
+    "build": "ncc build find-successful-workflow.ts --license licenses.txt",
     "prepare": "is-ci || husky install"
   },
   "bugs": {
     "url": "https://github.com/nrwl/nx-set-shas/issues"
   },
   "engines": {
-    "node": ">=14"
+    "node": ">=18"
   },
+  "volta": {
+    "node": "20.9.0",
+    "yarn": "1.22.21"
+  },
+  "packageManager": "yarn@1.22.21",
   "homepage": "https://github.com/nrwl/nx-set-shas#readme",
   "dependencies": {
     "@actions/core": "^1.10.0",
     "@actions/github": "^5.1.1",
-    "@octokit/action": "^4.0.10"
+    "@octokit/action": "^6.0.6",
+    "https-proxy-agent": "7.0.2",
+    "proxy-from-env": "1.1.0"
   },
   "devDependencies": {
-    "@vercel/ncc": "^0.34.0",
+    "@types/node": "^20.9.2",
+    "@vercel/ncc": "^0.36.1",
     "chalk": "^4.1.2",
     "husky": "^8.0.1",
-    "is-ci": "^3.0.1"
+    "is-ci": "^3.0.1",
+    "lint-staged": "15.1.0",
+    "prettier": "^3.1.0",
+    "typescript": "^5.2.0"
+  },
+  "lint-staged": {
+    "*.{ts,json,yml,md}": [
+      "npx prettier --write"
+    ]
   }
 }
