@@ -27,22 +27,17 @@
   dependencies:
     tunnel "^0.0.6"
 
-"@fastify/busboy@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@fastify/busboy/-/busboy-2.0.0.tgz#f22824caff3ae506b18207bad4126dbc6ccdb6b8"
-  integrity sha512-JUFJad5lv7jxj926GPgymrWQxxjPYuJNiNjNMzqT+HiuP6Vl3dk5xzG+8sTX96np0ZAluvaMzPsjhHZ5rNuNQQ==
-
-"@octokit/action@^6.0.6":
-  version "6.0.6"
-  resolved "https://registry.yarnpkg.com/@octokit/action/-/action-6.0.6.tgz#8c43b22188b8e6530e108cd3aab37ff07e2804b2"
-  integrity sha512-glsTZrjXgAHpyDKQah53hQUkb79mSrGSSqLeyiri9wDs3Ds3aaR7D9H3r5kLW6RAY606to9cjwVEClbEkoGoow==
+"@octokit/action@^6.0.7":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@octokit/action/-/action-6.1.0.tgz#4e7609a096cdecb02f9b5ea61e4c6f8355114505"
+  integrity sha512-lo+nHx8kAV86bxvOVOI3vFjX3gXPd/L7guAUbvs3pUvnR2KC+R7yjBkA1uACt4gYhs4LcWP3AXSGQzsbeN2XXw==
   dependencies:
     "@octokit/auth-action" "^4.0.0"
     "@octokit/core" "^5.0.0"
     "@octokit/plugin-paginate-rest" "^9.0.0"
     "@octokit/plugin-rest-endpoint-methods" "^10.0.0"
     "@octokit/types" "^12.0.0"
-    undici "^5.0.0"
+    undici "^6.0.0"
 
 "@octokit/auth-action@^4.0.0":
   version "4.0.1"
@@ -693,12 +688,10 @@ undici-types@~5.26.4:
   resolved "https://registry.yarnpkg.com/undici-types/-/undici-types-5.26.5.tgz#bcd539893d00b56e964fd2657a4866b221a65617"
   integrity sha512-JlCMO+ehdEIKqlFxk6IfVoAUVmgz7cU7zD/h9XZ0qzeosSHmUJVOzSQvvYSYWXkFXC+IfLKSIffhv0sVZup6pA==
 
-undici@^5.0.0:
-  version "5.25.4"
-  resolved "https://registry.yarnpkg.com/undici/-/undici-5.25.4.tgz#7d8ef81d94f84cd384986271e5e5599b6dff4296"
-  integrity sha512-450yJxT29qKMf3aoudzFpIciqpx6Pji3hEWaXqXmanbXF58LTAGCKxcJjxMXWu3iG+Mudgo3ZUfDB6YDFd/dAw==
-  dependencies:
-    "@fastify/busboy" "^2.0.0"
+undici@^6.0.0:
+  version "6.23.0"
+  resolved "https://registry.yarnpkg.com/undici/-/undici-6.23.0.tgz#7953087744d9095a96f115de3140ca3828aff3a4"
+  integrity sha512-VfQPToRA5FZs/qJxLIinmU59u0r7LXqoJkCzinq3ckNJp3vKEh7jTWN589YQ5+aoAC/TGRLyJLCPKcLQbM8r9g==
 
 universal-user-agent@^6.0.0:
   version "6.0.0"
