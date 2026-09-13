@@ -1,18 +1,23 @@
-<p style="text-align: center;"><img src=".github/assets/nx.png" 
-width="100%" alt="Nx - Smart, Extensible Build Framework"></p>
+<p style="text-align: center;">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-dark.svg">
+    <img alt="Nx - Smart Repos · Fast Builds" src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-light.svg" width="100%">
+  </picture>
+</p>
 
-<h1 align="center">Set SHAs Action</h2>
+<h1 align="center">Set SHAs Action</h1>
 
-✨ A Github Action which sets the base and head SHAs required for the `nx affected` commands in CI
+✨ A GitHub Action which sets the base and head SHAs required for the `nx affected` commands in CI
 
 - [Example Usage](#example-usage)
 - [Configuration Options](#configuration-options)
+- [Permissions in v2+](#permissions-in-v2)
+- [Self-hosted runners](#self-hosted-runners)
 - [Background](#background)
+  - [Problem](#problem)
 - [License](#license)
 
-**NOTE:** This documentation is for version `2.x.x+` which now uses the GitHub API to track successful workflows. You can find documentation for version `1.x.x` which used GIT tags [here](https://github.com/nrwl/nx-set-shas/blob/v1/README.md).
-
-**NOTE:** The `v4` does no longer support deprecated Node versions. Supported version is `Node v18+`.
+**NOTE:** This documentation is for version `2.x.x` and later which now uses the GitHub API to track successful workflows. You can find documentation for version `1.x.x` which used GIT tags [here](https://github.com/nrwl/nx-set-shas/blob/v1/README.md).
 
 ## Example Usage
 
@@ -28,10 +33,11 @@ jobs:
     runs-on: ubuntu-latest
     name: My Job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+          filter: tree:0 # Optional, but recommended: reduce the size of the checkout with tree filtering, see https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
 
       # In any subsequent steps within this job (myjob) we can reference the resolved SHAs
       # using either the step outputs or environment variables:
@@ -40,7 +46,7 @@ jobs:
       # OPTION 1) Environment variables
       # ===========================================================================
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
 
       - run: |
           echo "BASE: ${{ env.NX_BASE }}"
@@ -51,7 +57,7 @@ jobs:
       # ===========================================================================
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
         id: setSHAs
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
 
       - run: |
           echo "BASE: ${{ steps.setSHAs.outputs.base }}"
@@ -67,45 +73,63 @@ jobs:
 <!-- start configuration-options -->
 
 ```yaml
-- uses: nrwl/nx-set-shas@v4
+- uses: nrwl/nx-set-shas@v5
   with:
+    # The GitHub token used to perform git operations
+    #
+    # Default: ${ github.token }
+    gh-token: ''
+
     # The "main" branch of your repository (the base branch which you target with PRs).
     # Common names for this branch include main and master.
     #
-    # Default: main
-    main-branch-name: ""
+    # Default: "main"
+    main-branch-name: ''
+
+    # The name of the remote to fetch from
+    #
+    # Default: "origin"
+    remote: ''
 
     # Applies the derived SHAs for base and head as NX_BASE and NX_HEAD environment variables within the current Job.
     #
     # Default: true
-    set-environment-variables-for-job: ""
+    set-environment-variables-for-job: ''
 
     # By default, if no successful workflow run is found on the main branch to determine the SHA, we will log a warning and use HEAD~1. Enable this option to error and exit instead.
     #
     # Default: false
-    error-on-no-successful-workflow: ""
+    error-on-no-successful-workflow: ''
+
+    # Fallback SHA to use if no successful workflow run is found. This can be useful in scenarios where you need a specific commit as a reference for comparison, especially in newly set up repositories or those with sparse workflow runs.
+    fallback-sha: ''
 
     # The type of event to check for the last successful commit corresponding to that workflow-id, e.g. push, pull_request, release etc.
     #
-    # Default: push
-    last-successful-event: ""
+    # Default: "push"
+    last-successful-event: ''
 
     # The path where your repository is. This is only required for cases where the repository code is checked out or moved to a specific path.
     #
-    # Default: .
-    working-directory: ""
+    # Default: "."
+    working-directory: ''
 
     # The ID of the github action workflow to check for successful run or the name of the file name containing the workflow.
     # E.g. 'ci.yml'. If not provided, current workflow id will be used
     #
-    workflow-id: ""
+    workflow-id: ''
+
+    # When using merge-group, use the previous commit in the group as the base SHA.
+    #
+    # Default: true
+    use-previous-merge-group-commit: ''
 ```
 
 <!-- end configuration-options -->
 
 ## Permissions in v2+
 
-This Action uses Github API to find the last successful workflow run. If your `GITHUB_TOKEN` has restrictions set please ensure you override them for the workflow to enable read access to `actions` and `contents`:
+This Action uses Github API to find the last successful workflow run. If your `GITHUB_TOKEN` has restrictions set please ensure you override them for the workflow to enable read access to `actions` and `contents`. If you are using the action with `merge queues` you will need to enable also `pull-request` permission:
 
 <!-- start permissions-in-v2 -->
 
@@ -115,8 +139,9 @@ jobs:
     runs-on: ubuntu-latest
     name: My Job
     permissions:
-      contents: "read"
-      actions: "read"
+      contents: 'read'
+      actions: 'read'
+      pull-requests: 'read'
 ```
 
 <!-- end permissions-in-v2 -->
@@ -133,13 +158,14 @@ This Action supports usage of your own self-hosted runners, but since it uses Gi
 jobs:
   myjob:
     runs-on: self-hosted
-      container: my-org/my-amazing-image:v1.2.3-fresh
+    container: my-org/my-amazing-image:v1.2.3-fresh
     name: My Job
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v6
         with:
           # We need to fetch all branches and commits so that Nx affected has a base to compare against.
           fetch-depth: 0
+          filter: tree:0 # Optional, but recommended: reduce the size of the checkout with tree filtering, see https://github.blog/open-source/git/get-up-to-speed-with-partial-clone-and-shallow-clone/
 
       # Mark your git directory as safe
       - name: Set Directory as Safe
@@ -148,7 +174,7 @@ jobs:
         shell: bash
 
       - name: Derive appropriate SHAs for base and head for `nx affected` commands
-        uses: nrwl/nx-set-shas@v4
+        uses: nrwl/nx-set-shas@v5
 
       - run: |
           echo "BASE: ${{ env.NX_BASE }}"

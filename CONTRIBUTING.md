@@ -1,10 +1,24 @@
+# Contributing
+
+## Prerequisites
+
+For development purposes, this repo uses `bun` as a package manager, bundler and TypeScript script runner.
+
+You can install `bun` by following the instruction on https://bun.com/
+
+## Development
+
+- Run `bun install` to install the dependencies.
+- Run `bun run build` to build the action.
+- Run `bun run format` to format the code. This is also done automatically by the pre-commit hook (please do not skip it).
+
 # Notes to Admins
 
 In order to publish a new version of the action, simply update the "version" in the package.json and merge into the main branch.
 
-If your changed files include `find-successful-workflow.js`, then you should also update the bundle in the `dist` folder using `npm run build`.
+If your changed files include `find-successful-workflow.ts`, then you should also update the bundle in the `dist` folder using `npm run build`.
 
-The workflow at ./github/workflows/publish.yml will apply the new version in the form of tags, which is all that is needed to publish an Action.
+The workflow at `./github/workflows/publish.yml` will apply the new version in the form of tags, which is all that is needed to publish an Action.
 
 Example of tags applied:
 
